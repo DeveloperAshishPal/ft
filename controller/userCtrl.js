@@ -67,60 +67,60 @@ var register_user = function (req, res) {
 
     var updateCode = randomToken(6);
     console.log('djasbjdbsajbdjsbajdbasjbdjbasjbd')
-    
+
     User.find({
-        'email':email,
+        'email': email,
         'adhaar_no': adhaar
-    }).exec(function(err,data){
-        if(err) throw err;
-        if(data.length > 0){
-            res.send(jsend.failure("user already exists with email "+ email))
-        }else{
-                Passwords.encryptPassword({
-        password: password,
-    }).exec({
-        // An unexpected error occurred.
-        error: function (err) {
-            // send appropiate response
-            // add it also into logger
-        },
-        // OK.
-        success: function (encryptedPassword) {
-            var newUser = new User({
-                "name": name,
-                "email": email,
-                "adhaar_no": adhaar,
-                "password": encryptedPassword,
-                "updateCode": updateCode,
-                "is_status": false
-            });
+    }).exec(function (err, data) {
+        if (err) throw err;
+        if (data.length > 0) {
+            res.send(jsend.failure("user already exists with email " + email))
+        } else {
+            Passwords.encryptPassword({
+                password: password,
+            }).exec({
+                // An unexpected error occurred.
+                error: function (err) {
+                    // send appropiate response
+                    // add it also into logger
+                },
+                // OK.
+                success: function (encryptedPassword) {
+                    var newUser = new User({
+                        "name": name,
+                        "email": email,
+                        "adhaar_no": adhaar,
+                        "password": encryptedPassword,
+                        "updateCode": updateCode,
+                        "is_status": false
+                    });
 
-            newUser.save(function (err, data) {
-                if (err) throw err;
-                console.log(data)
-                
-                const mailOptions = {
-                    from: 'filestatus@gmail.com', // sender address
-                    to: data.email , // list of receivers
-                    subject: 'Confirmation Code', // Subject line
-                    html: '<p>Your Confirmation Code is ' + data.updateCode  + '</p>' // plain text body
-                };
+                    newUser.save(function (err, data) {
+                        if (err) throw err;
+                        console.log(data)
 
-                transporter.sendMail(mailOptions, function (err, info) {
-                    if (err) {
-                        console.log(err)
-                    } else {
-                        res.send(data);
-                    }
-                });
+                        const mailOptions = {
+                            from: 'filestatus@gmail.com', // sender address
+                            to: data.email, // list of receivers
+                            subject: 'Confirmation Code', // Subject line
+                            html: '<p>Your Confirmation Code is ' + data.updateCode + '</p>' // plain text body
+                        };
+
+                        transporter.sendMail(mailOptions, function (err, info) {
+                            if (err) {
+                                console.log(err)
+                            } else {
+                                res.send(data);
+                            }
+                        });
+                    });
+                }
             });
         }
+
     });
-        }
-        
-    });
-    
-    
+
+
 
 
 };
@@ -149,48 +149,48 @@ var login_user = function (req, res) {
             return res.send('No user found with ' + email);
         }
         console.log(data)
-        
-        if(data.length > 0){
+
+        if (data.length > 0) {
             Passwords.checkPassword({
-            passwordAttempt: password,
-            encryptedPassword: data[0].password,
-        }).exec({
-            // An unexpected error occurred.
-            error: function (err) {
-                console.log(err)
-                // set appropiate response 
-                // add into log
-            },
-            // Password attempt does not match already-encrypted version
-            incorrect: function () {
-                return res.send('Incorrect password');
-            },
-            // OK.
-            success: function () {
-                var token = jwtoken.generateToken(req);
+                passwordAttempt: password,
+                encryptedPassword: data[0].password,
+            }).exec({
+                // An unexpected error occurred.
+                error: function (err) {
+                    console.log(err)
+                    // set appropiate response 
+                    // add into log
+                },
+                // Password attempt does not match already-encrypted version
+                incorrect: function () {
+                    return res.send('Incorrect password');
+                },
+                // OK.
+                success: function () {
+                    var token = jwtoken.generateToken(req);
 
-                User.update({
-                    '_id': data[0]._id
-                }, {
-                    $set: {
-                        'token': token
-                       
-                    }
-                }, function (err) {
-                    if (err) {
-                        // send a response
-                    }
+                    User.update({
+                        '_id': data[0]._id
+                    }, {
+                        $set: {
+                            'token': token
 
-                    return res.send(data[0]);
-                    console.log(data)
-                });
-            }
-        });
-        }else{
+                        }
+                    }, function (err) {
+                        if (err) {
+                            // send a response
+                        }
+
+                        return res.send(data[0]);
+                        console.log(data)
+                    });
+                }
+            });
+        } else {
             return res.send('No user found with ' + email);
         }
-        
-        
+
+
     });
 }
 
@@ -212,36 +212,40 @@ var forget_password = function (req, res) {
 
         var updateCode = randomToken(8);
         console.log(userdata)
-    
-      
+
+
         User.update({
             '_id': data._id
         }, {
             $set: {
                 'password': updateCode
             }
-        }, function (err,udata) {
+        }, function (err, udata) {
             if (err) {
                 // hardik will handle
-            }  console.log(data)
+            }
+            console.log(udata)
 
             // mail code 
             const mailOptions = {
                 from: 'filestatus@gmail.com', // sender address
                 to: data[0].email, // list of receivers
                 subject: 'Password Change Request', // Subject line;
-                html: '<p>Please click on the link to change your password http://'+req.headers.host + '/reset/user/' + updateCode+' </p> ' // plain text body
+                html: '<p>Please click on the link to change your password http://' + req.headers.host + '/reset/user/' + updateCode + ' </p> ' // plain text body
             };
 
-            transporter.sendMail(mailOptions, function (err, info) {
-                if (err) {
-                    console.log(err)  
-                }
-                return res.send('Please Check your mail for further process');
+//            res.send('dummy')
 
-            });
+                        transporter.sendMail(mailOptions, function (err, info) {
+                            if (err) {
+                                console.log(err)  
+                            }
+                            return res.send('Please Check your mail for further process');
+            
+                        });
         });
-    });}
+    });
+}
 
 ///////////////////////////////////////////////////////////////code not working ///////////////////////////////////////////////////////////////////////////
 
@@ -294,7 +298,7 @@ var delete_user = function (req, res) {
     }, function (err, data) {
         if (err) throw err;
         res.send(data);
-    
+
     });
 }
 
@@ -312,7 +316,7 @@ var statusUser = function (req, res) {
         var code = req.body.code;
         console.log(code)
     } else {
-        
+
         return res.send('please enter user code')
     }
 
@@ -322,10 +326,10 @@ var statusUser = function (req, res) {
         if (err) {
             throw err;
             console.log(err);
-console.log(data +"data");
-        
+            console.log(data + "data");
+
         }
-        
+
 
         if (data.length > 0) {
             User.update({

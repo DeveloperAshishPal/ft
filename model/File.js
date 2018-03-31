@@ -3,67 +3,73 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var historySchema = new Schema({
-    assignedFrom : {
+    assignedFrom: {
         type: String,
         required: true
     },
-    assignedTo : {
+    assignedTo: {
         type: String,
         required: true
     },
-    assignedEmail : {
-      type: String,
-        required: true
-    },
-    date : {
+    assignedEmail: {
         type: String,
         required: true
     },
-    status : {
+    date: {
         type: String,
-        enum: ['processed','processing','recieved','completed','improper'],
+        required: true
+    },
+    description: {
+        type: String,
+        required: false
+    },
+    status: {
+        type: String,
+        enum: ['processed', 'processing', 'recieved', 'completed', 'improper'],
         required: true,
         default: 'recieved'
     }
-},{ _id : false });
+}, {
+    _id: false
+});
 
 // create a schema
 var fileSchema = new Schema({
-    creatorId : {
+    creatorId: {
         type: String,
         required: true
     },
-    userId : {
+    userId: {
         type: String,
         required: false
     },
-    description : {
+    description: {
         type: String,
         required: false
     },
-    filename : {
+    filename: {
         type: String,
         required: true
     },
-    history : {
+    history: {
         type: [historySchema],
         required: false
     },
-       adhaar : {
+    adhaar: {
         type: String,
         required: true
     },
-    fileId : {
+    fileId: {
         type: String,
         required: true,
         unique: true
     },
-    is_status:{
+    is_status: {
         type: Boolean,
         required: true,
         default: true,
     },
-    is_delete:{
+    is_delete: {
         type: Boolean,
         required: true,
         default: false
