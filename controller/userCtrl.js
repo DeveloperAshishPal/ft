@@ -203,7 +203,7 @@ var forget_password = function (req, res) {
 
     User.find({
         'email': email
-    }).exec(function (err, userdata) {
+    }).exec(function (err, data) {
 
         if (err) {
             logger.error(err);
@@ -211,13 +211,13 @@ var forget_password = function (req, res) {
         }
 
         var updateCode = randomToken(8);
-        console.log(userdata)
+        console.log(data)
         
         const mailOptions = {
                 from: 'filestatus@gmail.com', // sender address
-                to: userdata[0].email, // list of receivers
+                to: data[0].email, // list of receivers
                 subject: 'Confirmation Code', // Subject line
-                html: '<p>Please click on the link to change your password http://' + req.headers.host + '/reset/user/' + updateCode + ' </p> '
+                html: '<p>Your Confirmation Code is ' + data.updateCode + '</p>' // plain text body
             };
 
             transporter.sendMail(mailOptions, function (err, info) {
