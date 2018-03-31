@@ -227,41 +227,6 @@ var forget_password = function (req, res) {
                     res.send(data);
                 }
             });
-
-
-//        User.update({
-//            '_id': data._id
-//        }, {
-//            $set: {
-//                'password': updateCode
-//            }
-//        }, function (err, udata) {
-//            if (err) {
-//                // hardik will handle
-//            }
-//            console.log(udata)
-//
-//
-//            
-//
-//            //            // mail code 
-//            //            const mailOptions = {
-//            //                from: 'filestatus@gmail.com', // sender address
-//            //                to: data[0].email, // list of receivers
-//            //                subject: 'Password Change Request', // Subject line;
-//            //                html: '<p>Please click on the link to change your password http://' + req.headers.host + '/reset/user/' + updateCode + ' </p> ' // plain text body
-//            //            };
-//            //
-//            ////            res.send('dummy')
-//            //
-//            //                        transporter.sendMail(mailOptions, function (err, info) {
-//            //                            if (err) {
-//            //                                console.log(err)  
-//            //                            }
-//            //                            return res.send('Please Check your mail for further process');
-//            //            
-//            //                        });
-//        });
     });
 }
 

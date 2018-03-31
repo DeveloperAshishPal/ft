@@ -218,39 +218,25 @@ var forget_password = function (req, res) {
         if (err) {
             res.send(jsend.failure("System Internal Error"));
         }
-        console.log(data);
+        
         var updateCode = randomToken(8);
-        Admin.update({
-            '_id': data[0]._id
-        }, {
-            $set: {
-                'updateCode': code
-
-
-            }
-        }, function (err) {
-            if (err) {
-                // hardik will handle
-            }
-
-            // mail code 
-            const mailOptions = {
+        console.log(data)
+        
+        const mailOptions = {
                 from: 'filestatus@gmail.com', // sender address
                 to: data[0].email, // list of receivers
-                subject: 'Password Change Request', // Subject line;//
-                html: '<p>Please click on the link to change your password http://' + req.headers.host + '/reset/admin/' + updateCode + ' </p> ' // plain text body
+                subject: 'Confirmation Code', // Subject line
+                html: '<p>Your Confirmation Code is <b>' + updateCode + ' </b> </p>' // plain text body
             };
 
             transporter.sendMail(mailOptions, function (err, info) {
                 if (err) {
-                    console.log(err + "error")
+                    console.log(err)
+                } else {
+                    res.send(data);
                 }
-                console.log(info + "email send");
-                return res.send('Please Check your mail for further process');
-
-                ///////////code not working ////////////////////////////
             });
-        });
+        
     })
 }
 
