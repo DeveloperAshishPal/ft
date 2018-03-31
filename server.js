@@ -23,6 +23,7 @@ app.use(cors())
 app.set('views', './views')
 app.set('view engine', 'ejs')
 
+app.use("/", express.static(__dirname + '/index.html'));
 //  Connect all our routes to our application
 
 

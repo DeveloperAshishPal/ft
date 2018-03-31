@@ -222,11 +222,37 @@ var forget_password = function (req, res) {
         var updateCode = randomToken(8);
         console.log(data)
         
-        const mailOptions = {
+        Passwords.encryptPassword({
+                password: updateCode,
+            }).exec({
+                // An unexpected error occurred.
+                error: function (err) {
+                    // send appropiate response
+                    // add it also into logger
+                },
+                // OK.
+                success: function (encryptedPassword) {
+                    password = encryptedPassword;
+                }
+        });
+        
+        
+        Admin.update({
+            'email':email
+        },{
+            $set : {
+                'password':password
+            }
+        },function(err){
+            if(err){
+                console.log(err);
+            }
+            
+            const mailOptions = {
                 from: 'filestatus@gmail.com', // sender address
                 to: data[0].email, // list of receivers
                 subject: 'Confirmation Code', // Subject line
-                html: '<p>Your Confirmation Code is <b>' + updateCode + ' </b> </p>' // plain text body
+                html: '<p>Your New password is <b>' + updateCode + ' </b> </p>' // plain text body
             };
 
             transporter.sendMail(mailOptions, function (err, info) {
@@ -236,6 +262,12 @@ var forget_password = function (req, res) {
                     res.send(data);
                 }
             });
+            
+        })
+        
+        
+        
+        
         
     })
 }
@@ -258,7 +290,20 @@ var updateAdmin = function (req, res) {
     }
 
     if (req.body.password && req.body.password != '') {
-        query["password"] = req.body.password
+        
+        Passwords.encryptPassword({
+                password: req.body.password,
+            }).exec({
+                // An unexpected error occurred.
+                error: function (err) {
+                    // send appropiate response
+                    // add it also into logger
+                },
+                // OK.
+                success: function (encryptedPassword) {
+                    query["password"] = encryptedPassword;
+                }
+        });
     }
 
     Admin.update({
