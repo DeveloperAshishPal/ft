@@ -203,7 +203,7 @@ var forget_password = function (req, res) {
 
     User.find({
         'email': email
-    }).exec(function (err, data) {
+    }).exec(function (err, userdata) {
 
         if (err) {
             logger.error(err);
@@ -211,7 +211,7 @@ var forget_password = function (req, res) {
         }
 
         var updateCode = randomToken(8);
-        console.log(updateCode)
+        console.log(userdata)
     
       
         User.update({
@@ -220,7 +220,7 @@ var forget_password = function (req, res) {
             $set: {
                 'password': updateCode
             }
-        }, function (err,data) {
+        }, function (err,udata) {
             if (err) {
                 // hardik will handle
             }  console.log(data)
@@ -228,7 +228,7 @@ var forget_password = function (req, res) {
             // mail code 
             const mailOptions = {
                 from: 'filestatus@gmail.com', // sender address
-                to: data.email, // list of receivers
+                to: data[0].email, // list of receivers
                 subject: 'Password Change Request', // Subject line;
                 html: '<p>Please click on the link to change your password http://'+req.headers.host + '/reset/user/' + updateCode+' </p> ' // plain text body
             };

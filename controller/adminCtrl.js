@@ -23,8 +23,8 @@ var list = function (req, res) {
             logger.error(err);
             return res.send(jsend.failure("Internal Server Error"));
         }
-         
-        return res.send(jsend.success("Success",staffs));
+
+        return res.send(jsend.success("Success", staffs));
     });
 };
 
@@ -41,13 +41,12 @@ var detail = function (req, res) {
         is_status: true,
         is_delete: false
     }).exec(function (err, staff) {
-        if (err) 
-        {
+        if (err) {
             logger.error(err);
             return res.send(jsend.failure("Internal Server Error"));
         }
-        
-        return res.send(jsend.success("Admin Detail",staff[0]));// array removal not removing
+
+        return res.send(jsend.success("Admin Detail", staff[0])); // array removal not removing
     });
 };
 
@@ -127,14 +126,13 @@ var addAdmin = function (req, res) {
             });
 
             newAdmin.save(function (err, data) {
-                if (err) 
-                {
+                if (err) {
                     logger.error(err);
                     res.send(jsend.failure("Internal Server Error"))
                 }
-                
-                
-                 res.send(jsend.success("successfully added",data));
+
+
+                res.send(jsend.success("successfully added", data));
             });
         }
     });
@@ -144,7 +142,7 @@ var addAdmin = function (req, res) {
 var login = function (req, res) {
     if (req.body.email && req.body.email != '') {
         var email = req.body.email
-        
+
         console.log(email);
     } else {
         return res.send('please input email');
@@ -165,7 +163,7 @@ var login = function (req, res) {
         if (err) {
             return res.send('No admin found with ' + email);
         }
-        console.log(data )
+        console.log(data)
 
         Passwords.checkPassword({
             passwordAttempt: password,
@@ -185,19 +183,19 @@ var login = function (req, res) {
             // OK.
             success: function () {
                 var token = jwtoken.generateToken(req);
-                
+
                 Admin.update({
-                    '_id':data[0]._id
-                },{
-                    $set : {
+                    '_id': data[0]._id
+                }, {
+                    $set: {
                         'token': token
                     }
-                },function(err){
-                    if(err){
+                }, function (err) {
+                    if (err) {
                         // send a response
-                    }    
-                    
-                    return res.send(data[0]);  
+                    }
+
+                    return res.send(data[0]);
                     console.log(data)
                 });
             }
@@ -220,15 +218,15 @@ var forget_password = function (req, res) {
         if (err) {
             res.send(jsend.failure("System Internal Error"));
         }
-console.log(data);
+        console.log(data);
         var updateCode = randomToken(8);
         Admin.update({
             '_id': data[0]._id
         }, {
             $set: {
                 'updateCode': code
-                
-                
+
+
             }
         }, function (err) {
             if (err) {
@@ -240,16 +238,16 @@ console.log(data);
                 from: 'filestatus@gmail.com', // sender address
                 to: data[0].email, // list of receivers
                 subject: 'Password Change Request', // Subject line;//
-                html: '<p>Please click on the link to change your password http://'+req.headers.host + '/reset/admin/' + updateCode+' </p> ' // plain text body
+                html: '<p>Please click on the link to change your password http://' + req.headers.host + '/reset/admin/' + updateCode + ' </p> ' // plain text body
             };
 
             transporter.sendMail(mailOptions, function (err, info) {
                 if (err) {
-                    console.log(err +"error")
+                    console.log(err + "error")
                 }
                 console.log(info + "email send");
                 return res.send('Please Check your mail for further process');
-                
+
                 ///////////code not working ////////////////////////////
             });
         });
